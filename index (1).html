@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0F5E3C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Diligences MDET">
+<title>Matrice des diligences — Cabinet MDET</title>
+<style>
+:root{
+  --or:#F77F00; --vert-flag:#009E60; --ink:#15110C; --muted:#6B6256;
+  --paper:#FAF7F1; --surface:#FFFFFF; --line:#E7E0D4;
+  --realise:#1E7E34; --encours:#1F6FB2; --attente:#D49A0C; --afaire:#B02418;
+  --shadow:0 1px 2px rgba(40,30,10,.05),0 6px 22px rgba(40,30,10,.06);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background:var(--paper); color:var(--ink); line-height:1.45;
+  font-size:15px; padding-bottom:env(safe-area-inset-bottom);
+}
+.serif{font-family:Georgia,"Times New Roman",Cambria,serif}
+.wrap{max-width:680px;margin:0 auto}
+
+/* tricolor band */
+.flag{display:flex;height:5px}
+.flag i{flex:1}
+.flag .o{background:var(--or)} .flag .w{background:#fff} .flag .g{background:var(--vert-flag)}
+
+/* header */
+header{background:var(--surface);border-bottom:1px solid var(--line);
+  padding:14px 18px calc(14px + env(safe-area-inset-top));padding-top:max(14px,env(safe-area-inset-top))}
+.eyebrow{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.org{font-family:Georgia,serif;font-size:14.5px;font-weight:700;margin-top:3px;line-height:1.25}
+.subline{font-size:12px;color:var(--muted);margin-top:4px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.dot{width:4px;height:4px;border-radius:50%;background:var(--or);display:inline-block}
+
+/* hero */
+.hero{padding:22px 18px 8px}
+.hero-card{background:var(--surface);border:1px solid var(--line);border-radius:18px;
+  padding:20px 20px 18px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.hero-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--or) 0 33.3%,#fff 33.3% 66.6%,var(--vert-flag) 66.6%)}
+.hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.hero-label{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.record{font-size:10.5px;font-weight:700;color:var(--vert-flag);background:rgba(0,158,96,.1);
+  border:1px solid rgba(0,158,96,.25);padding:3px 9px;border-radius:999px;white-space:nowrap}
+.big{font-family:Georgia,serif;font-size:62px;font-weight:700;line-height:.95;margin-top:6px;letter-spacing:-.02em}
+.big small{font-size:26px;font-weight:600;color:var(--muted)}
+.big-sub{font-size:13.5px;color:var(--muted);margin-top:2px}
+.delta{display:inline-flex;gap:5px;align-items:center;margin-top:12px;font-size:12.5px;
+  color:var(--realise);font-weight:600;background:rgba(30,126,52,.08);padding:5px 11px;border-radius:999px}
+
+/* donut */
+.section{padding:18px 18px 6px}
+.section-title{font-family:Georgia,serif;font-size:13px;font-weight:700;letter-spacing:.02em;
+  text-transform:uppercase;color:var(--ink);display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.section-title::before{content:"";width:14px;height:2px;background:var(--or)}
+.donut-row{display:flex;gap:18px;align-items:center;background:var(--surface);border:1px solid var(--line);
+  border-radius:18px;padding:18px;box-shadow:var(--shadow)}
+.donut-wrap{position:relative;flex:0 0 130px;width:130px;height:130px}
+.donut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.donut-center .n{font-family:Georgia,serif;font-size:30px;font-weight:700;line-height:1}
+.donut-center .l{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
+.legend{flex:1;display:flex;flex-direction:column;gap:9px;min-width:0}
+.leg{display:flex;align-items:center;gap:9px;cursor:pointer;border-radius:10px;padding:5px 7px;margin:-5px -7px;transition:background .15s}
+.leg:active{background:var(--paper)}
+.leg .sw{width:11px;height:11px;border-radius:3px;flex:0 0 auto}
+.leg .nm{font-size:13px;font-weight:500;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.leg .ct{font-family:Georgia,serif;font-weight:700;font-size:15px}
+.leg .pc{font-size:11px;color:var(--muted);width:42px;text-align:right}
+
+/* axes */
+.axes{display:flex;flex-direction:column;gap:11px}
+.axe{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
+.axe-head{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer}
+.axe-id{font-family:Georgia,serif;font-size:11px;font-weight:700;color:#fff;background:var(--ink);
+  width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.axe-meta{flex:1;min-width:0}
+.axe-title{font-size:14px;font-weight:600;line-height:1.2}
+.axe-sub{font-size:11.5px;color:var(--muted);margin-top:2px}
+.axe-act{text-align:right;flex:0 0 auto}
+.axe-act .v{font-family:Georgia,serif;font-size:20px;font-weight:700;line-height:1}
+.axe-act .k{font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.bar{display:flex;height:7px;background:var(--paper)}
+.bar i{height:100%;transition:width .5s ease}
+.chev{flex:0 0 auto;color:var(--muted);transition:transform .25s;font-size:13px}
+.axe.open .chev{transform:rotate(90deg)}
+.axe-body{display:none;border-top:1px solid var(--line);background:#FCFAF6}
+.axe.open .axe-body{display:block}
+.mini-stat{display:flex;gap:6px;padding:11px 16px;flex-wrap:wrap}
+.pill{font-size:11px;padding:4px 10px;border-radius:999px;font-weight:600;display:inline-flex;gap:6px;align-items:center}
+.pill .d{width:7px;height:7px;border-radius:50%}
+
+/* filter bar */
+.filterbar{position:sticky;top:0;z-index:20;background:rgba(250,247,241,.92);
+  backdrop-filter:saturate(140%) blur(8px);-webkit-backdrop-filter:saturate(140%) blur(8px);
+  padding:10px 18px;border-bottom:1px solid var(--line)}
+.search{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:11px;
+  padding:10px 14px;font-size:14px;color:var(--ink);font-family:inherit}
+.search:focus{outline:none;border-color:var(--or)}
+.chips{display:flex;gap:7px;overflow-x:auto;padding:9px 18px 2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;border:1px solid var(--line);background:var(--surface);border-radius:999px;
+  padding:7px 13px;font-size:12.5px;font-weight:600;cursor:pointer;display:flex;gap:7px;align-items:center;color:var(--muted)}
+.chip .d{width:8px;height:8px;border-radius:50%}
+.chip.on{color:#fff;border-color:transparent}
+.chip .cnt{font-size:11px;opacity:.85}
+
+/* list */
+.list{padding:8px 18px 30px;display:flex;flex-direction:column;gap:8px}
+.count-line{font-size:12px;color:var(--muted);padding:6px 2px 2px}
+.item{background:var(--surface);border:1px solid var(--line);border-left-width:4px;border-radius:12px;
+  padding:12px 14px;box-shadow:var(--shadow)}
+.item-top{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.item-proj{font-size:11px;font-weight:700;letter-spacing:.02em;color:var(--ink);text-transform:uppercase}
+.item-axe{font-size:9.5px;color:var(--muted);white-space:nowrap;flex:0 0 auto;letter-spacing:.05em}
+.item-act{font-size:13.5px;margin-top:5px;line-height:1.4}
+.item-com{font-size:12px;color:var(--muted);margin-top:6px;padding-top:6px;border-top:1px dashed var(--line);line-height:1.4}
+.item-status{display:inline-flex;gap:6px;align-items:center;font-size:11px;font-weight:700;margin-top:7px}
+.item-status .d{width:8px;height:8px;border-radius:50%}
+.empty{text-align:center;color:var(--muted);padding:40px 20px;font-size:13.5px}
+
+footer{border-top:1px solid var(--line);padding:20px 18px calc(28px + env(safe-area-inset-bottom));
+  text-align:center;background:var(--surface)}
+.sign{font-family:Georgia,serif;font-size:15px;font-weight:700}
+.sign-sub{font-size:11px;color:var(--muted);margin-top:3px;letter-spacing:.04em}
+.gen{font-size:10.5px;color:var(--muted);margin-top:12px}
+</style>
+</head>
+<body>
+<div class="flag"><i class="o"></i><i class="w"></i><i class="g"></i></div>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">République de Côte d&rsquo;Ivoire &middot; Union &ndash; Discipline &ndash; Travail</div>
+    <div class="org">Cabinet du Ministre délégué &mdash; Enseignement Technique (MDET)</div>
+    <div class="subline">
+      <span>Matrice de suivi stratégique des diligences</span>
+      <span class="dot"></span><span>Prérogatives CP Curtis</span>
+      <span class="dot"></span><span id="hdr-date">24 juin 2026</span>
+    </div>
+  </header>
+
+  <div class="hero">
+    <div class="hero-card">
+      <div class="hero-top">
+        <div class="hero-label">Taux d&rsquo;activation du portefeuille</div>
+        <div class="record">★ Record absolu</div>
+      </div>
+      <div class="big serif"><span id="act-val">79,5</span><small>%</small></div>
+      <div class="big-sub">des actions <b>réalisées ou en cours</b> &middot; <span id="tot-val">151</span> diligences sur 5 axes</div>
+      <div class="delta">▲ +2,8 pts vs 15/06 &nbsp;·&nbsp; +22,3 pts depuis le 21 avril</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Répartition par statut</div>
+    <div class="donut-row">
+      <div class="donut-wrap">
+        <svg id="donut" viewBox="0 0 42 42" width="130" height="130"></svg>
+        <div class="donut-center"><div class="n serif" id="donut-n">151</div><div class="l">Total</div></div>
+      </div>
+      <div class="legend" id="legend"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Vue par axe stratégique</div>
+    <div class="axes" id="axes"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Détail des diligences</div>
+  </div>
+  <div class="filterbar">
+    <input class="search" id="search" type="search" placeholder="Rechercher un projet, une action, un partenaire…" autocomplete="off">
+  </div>
+  <div class="chips" id="chips"></div>
+  <div class="list" id="list"></div>
+
+  <footer>
+    <div class="sign serif">Jean-François CURTIS</div>
+    <div class="sign-sub">Conseiller Principal &middot; MDET/CAB/CP Curtis</div>
+    <div class="gen">Vue consolidée au <span id="ft-date">24 juin 2026</span> &middot; 151 diligences suivies</div>
+  </footer>
+</div>
+
+<script>
+const DATA = {"date": "24 juin 2026", "axes": [{"nom": "Axe 1", "titre": "Priorités critiques", "color": "#7C3AED", "total": 44, "counts": {"Réalisé": 25, "En cours": 12, "En attente": 4, "À faire": 3}, "activation": 84.1, "items": [{"projet": "Révision Politique ETFPA", "action": "Mettre en place un groupe de travail pour adapter la politique à la nouvelle nomenclature institutionnelle, sur la base d’un avenant (addendum officiel)", "statut": "À faire", "statut_raw": "A faire", "commentaire": ""}, {"projet": "ACE INNOVATE (MESRS et AFD)", "action": "Participer aux consultations nationales du 16 au 18 juin et exécuter les instructions du Ministre contenues dans la note de cadrage à cet effet.", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Note de cadrage transmise et CR des consultations disponible"}, {"projet": "Bloomfield", "action": "Représenter Monsieur le Ministre à la restitution du rapport risque pays 2026 au Sofitel Ivoire", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": ""}, {"projet": "Bloomfield", "action": "Faire un courrier réponse au courrier de remerciements reçu pour la participation à la conférence risque pays", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Courrier transmis pour signature le 18/05"}, {"projet": "Bloomfield", "action": "Poursuivre les travaux sur le risque secteur ET", "statut": "En attente", "statut_raw": "En attente", "commentaire": "En attente des instructions du Ministre sur le montant dédié au rapport"}, {"projet": "Feuille de Route du Ministre", "action": "Elaborer une feuille de route 2026 de l’ET basée sur la politique nationale, le discours du PR 2026, le programme du PR et le PND et orientations diverses", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Feuille de route transmise au Ministre"}, {"projet": "Feuille de Route du Ministre", "action": "Rédiger une note sur les 100 jours du Ministre", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Note transmise au Ministre"}, {"projet": "Feuille de Route du Ministre", "action": "Rédiger une note sur la Vision ET 2030 pour le MENAET", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Note transmise au Ministre"}, {"projet": "Feuille de Route du Ministre", "action": "Elaborer une infographie de la Vision ET 2030", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Infographie transmise au Ministre"}, {"projet": "Feuille de Route du Ministre", "action": "Rédiger une note au PM sur l’impact de l’IA sur les métiers du secteur productif", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Note transmise au Ministre"}, {"projet": "Réseau national « Entreprises Inclusives et observatoire genre/Inclusion »", "action": "Rédiger une note conceptuelle", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Note transmise au Ministre, en attente instructions"}, {"projet": "Réseau national « Entreprises Inclusives et observatoire genre/Inclusion »", "action": "Engager les discussions avec le SG de la CGECI : Transmettre un courrier sur le sujet ainsi que la note conceptuelle", "statut": "En cours", "statut_raw": "En cours", "commentaire": "Projet de courrier transmis au Ministre avec PJ pour validation puis transmission"}, {"projet": "Réseau national « Entreprises Inclusives et observatoire genre/Inclusion »", "action": "Faire monte en puissance la cellule genre avec la nomination de la secrétaire exécutive en qualité de conseiller technique Genre et coordonnatrice de la Cellule Genre", "statut": "En attente", "statut_raw": "En attente", "commentaire": "Instructions du Ministre attendues"}, {"projet": "Réseau national « Entreprises Inclusives et observatoire genre/Inclusion »", "action": "Demander au DAF du ministère de prévoir une dotation 2027à cet effet", "statut": "En attente", "statut_raw": "En attente", "commentaire": "En attente de la réaction de la CGECI"}, {"projet": "Nuit des Talents Techniques", "action": "Organiser séance de travail avec Mme SARR", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "02/06 : réunion tenue avec Mme SARR. Activation de l’événement en cours"}, {"projet": "Journées portes ouvertes de l’ETP", "action": "Demander à Mme SARR d’y travailler avec lancement 2026 ou 2027 :", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Informer Mme SARR"}, {"projet": "Cabinet d’influence (LBA)", "action": "Examiner l’offre de prestations", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Note analytique transmise au Ministre, instructions reçues"}, {"projet": "Cabinet d’influence (LBA)", "action": "Contacter LBA pour divers points à lever", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Mail transmis en attente réponse"}, {"projet": "Cabinet d’influence (LBA)", "action": "Examiner la nouvelle offre de LBA et produire une note comparative avec 35°Ouest", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Note transmise au Ministre, en attente instructions Note comparative LBA/35° Ouest transmise pour décision"}, {"projet": "Cabinet d'influence (35° Ouest)", "action": "Mettre en œuvre les instructions du Ministre", "statut": "En cours", "statut_raw": "En cours", "commentaire": "Accord du Ministre pour l'offre 35° Ouest en vue d’une collaboration"}, {"projet": "Cabinet d'influence (35° Ouest)", "action": "Négocier une réduction du coût de la prestation en relation avec Mme SARR", "statut": "En cours", "statut_raw": "En cours", "commentaire": "02/06 : réunion tenue avec Mme SARR. En attente de la nouvelle offre uniquement sur la gestion de crise."}, {"projet": "Audit image et influence du Ministre", "action": "Mettre en œuvre les instructions du Ministre : Appliquer les recommandations issues de l’audit", "statut": "En cours", "statut_raw": "En cours", "commentaire": "02/06 : réunion tenue avec Mme SARR. Recommandations en cours de mise en œuvre."}, {"projet": "PNUD", "action": "Lancement de l’UNIPOD du Lycée technique de Cocody en juin : Le PNUD doit transmettre les besoins à cet effet  Visiter le UNIPOD du LT Cocody la semaine prochaine", "statut": "En cours", "statut_raw": "En cours", "commentaire": "En attente de la liste des besoins pour lesquels le MDET peut agir"}, {"projet": "PNUD", "action": "Pacte PIETP : Le PNUD souhaite accompagner le MDET en : Aidant à la structuration des besoins Créant un basket fund pour accueillir les contributions diverses des partenaires Définir les indicateurs du pacte Créer le basket fund Plaidoyer pour davantage de partenaires", "statut": "En cours", "statut_raw": "En cours", "commentaire": "En attente de la proposition du PNUD sur ces points. 12/06 : Projet de document achevé, en cours de transmission au ministère"}, {"projet": "PNUD", "action": "ETFP 26-30 : le PNUD souhaite contribuer à son opérationnalisation : Extraire de la politique les éléments pouvant être confiés au PNUD pour avis", "statut": "En cours", "statut_raw": "En cours", "commentaire": "Extraction réalisée, transmise au Ministre pour instructions"}, {"projet": "PNUD", "action": "Lancer un concours conjoint de l’innovation technique en septembre 2026 : Proposer les TDR du concours", "statut": "En cours", "statut_raw": "En cours", "commentaire": "En attente du projet de TDR PNUD 12/06 : Projet de TDR achevé, en cours de transmission au ministère"}, {"projet": "PNUD", "action": "Transmettre docs PIETP et LTE Kosen", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "En attente retour PNUD pour offre d’appui"}, {"projet": "PNUD", "action": "Transmettre au PNUD une requête d’appui sur les projets ETP, identifiés dans la politique ETFPA.", "statut": "En cours", "statut_raw": "En cours", "commentaire": "Projet de courrier et rapport sur les projets pertinents transmis au ministre pour instructions"}, {"projet": "FDFP", "action": "Elaborer 2 TDR (Centre des métiers d’Art et Lycée Technique type Kosen)", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Transmis au DIRCAB pour inputs, en attente de ses observations"}, {"projet": "FDFP", "action": "Valider les TDR", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": ""}, {"projet": "FDFP", "action": "Transmettre les TDR par courrier au FDFP", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Courrier et TDR transmis au FDFP"}, {"projet": "FDFP", "action": "Répondre au courrier d’accusé de réception du FDFP", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Courrier transmis pour signature le 18/05"}, {"projet": "FDFP", "action": "Echanger avec le FDFP sur les TDR", "statut": "En cours", "statut_raw": "En cours", "commentaire": "Séance de travail tenue, en attente des observations et questions par mail"}, {"projet": "FDFP", "action": "Tenir une deuxième séance de travail", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "02/06 : Séance de travail tenue. Il a été décidé que les 2 projets d’établissements (Kosen et CFMA) feront l’objet d’études de faisabilité, d’études d’impact et d’études architecturale. Les TDR pour l’étude des besoins du secteur productif fera l’objet d’un amendement."}, {"projet": "FDFP", "action": "Transmettre au FDFP un courrier qui précise que les 2 projets d’établissements (Kosen et CFMA) feront l’objet d’études de faisabilité, d’études d’impact et d’études architecturale.", "statut": "En cours", "statut_raw": "En cours", "commentaire": "Projet de courrier transmis au Ministre pour validation puis transmission au FDFP"}, {"projet": "Centre de Promotion des NTIC", "action": "Élaborer une note de cadrage et offre technique et financière pour renforcement des capacités du CPNTIC", "statut": "En cours", "statut_raw": "En cours", "commentaire": "Séance de travail tenue ce 22/06 avec le cabinet Marabu"}, {"projet": "Centre de Promotion des NTIC", "action": "Transmettre la note de cadrage et l’offre au Ministre", "statut": "En attente", "statut_raw": "En attente", "commentaire": "En attente de la note et de l’offre"}, {"projet": "Impact de l'IA", "action": "Transmettre la note conceptuelle sur l’impact de l’IA sur les métiers au Directeur de la pédagogie pour qu’il propose un plan d’adaptation à l’impact de l’IA sur les curricula", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Note transmise, en attente du projet de plan sur l’IA"}, {"projet": "Impact de l'IA", "action": "Tenir une Séance de travail avec le Directeur des Curricula (métiers menacés par l'IA) pour examiner la proposition de plan d’adaptation.", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Réunion tenue le 22/06 : Le plan d’adaptation n’est pas nécessaire à ce stade car un grand nombre de métiers du rapport sont des formations dépendant du MESRS."}, {"projet": "Rapport 2025 des métiers en tension", "action": "Réaliser le rapport", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Utile pour toute aide à la décision"}, {"projet": "Cartographie des métiers en tension/zone économique", "action": "Réaliser la cartographie pour une couverture efficace des besoins", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Projet de cartographie transmis au Ministre"}, {"projet": "Boulangerie / Pâtisserie :", "action": "Élaborer un plan d'incitation des jeunes filles (en liaison avec la cellule Genre/Inclusion).", "statut": "À faire", "statut_raw": "A faire", "commentaire": ""}, {"projet": "Boulangerie / Pâtisserie :", "action": "Travailler à la formation de cohortes de jeunes à l’école de la boulangerie/AEJ pour les installer (faire note conceptuelle)", "statut": "À faire", "statut_raw": "A faire", "commentaire": ""}, {"projet": "Suivi PAV Vivrier 26-30", "action": "Rédiger Note au PM concernant les orpailleurs clandestins et contribution du MDET.", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "En attente poursuite des travaux avec le ministère"}]}, {"nom": "Axe 2", "titre": "Partenariats stratégiques (Pacte PIETP)", "color": "#1F6FB2", "total": 65, "counts": {"Réalisé": 23, "En cours": 31, "En attente": 9, "À faire": 2}, "activation": 83.1, "items": [{"projet": "MAYELIA", "action": "Signer la lettre d’engagement suite à la signature du Pacte", "statut": "En cours", "statut_raw": "En cours", "commentaire": "Lettre transmise au Ministre pour signature avant transmission à Mayelia"}, {"projet": "Orange Bank", "action": "Transmettre docs ETFP Digital, docs PIEPT", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Docs transmis pour analyse puis propositions"}, {"projet": "Orange Bank", "action": "Développer une offre de crédit digital pour le fonctionnaire de l’ETP", "statut": "En attente", "statut_raw": "En attente", "commentaire": "En attente de l’offre de Orange Bank"}, {"projet": "Orange Bank", "action": "Faire la mise en relation entre le GIBTP et Orange Bank pour développer la solution de paiement digital des salaires des employés BTP", "statut": "En cours", "statut_raw": "En cours", "commentaire": "Mise en relation réalisée, en attente des travaux entre les parties"}, {"projet": "Orange Bank", "action": "Organiser un événement type hackathon pour revaloriser l’ETP en faisant la promotion des filières techniques", "statut": "En attente", "statut_raw": "En attente", "commentaire": ""}, {"projet": "GIBTP", "action": "Rejoindre le Pacte", "statut": "En cours", "statut_raw": "En cours", "commentaire": "Transmission des documents faite"}, {"projet": "GIBTP", "action": "Transmettre au GIBTP les documents relatifs au Pacte (le Pacte, sa charte, sa note conceptuelle, la lettre d’engagement et la note conceptuelle du label EFA)", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Documents en cours d’examen par le GIBTP"}, {"projet": "GIBTP", "action": "Ajouter dans la lettre d’engagement la solution innovante digitale de certification et d’employabilité à l’endroit des travailleurs du BTP", "statut": "En cours", "statut_raw": "En cours", "commentaire": ""}, {"projet": "GIBTP", "action": "Le GIBTP doit transmettre une convention spécifique à la solution de certification", "statut": "En cours", "statut_raw": "En cours", "commentaire": ""}, {"projet": "GIBTP", "action": "Examen et signature de la convention de délégation", "statut": "En cours", "statut_raw": "En cours", "commentaire": "Suite audience du 21/04 ; sécuriser le cadre partenarial. 7/05 : Réunion de cadrage avec GIBTP et DAJ"}, {"projet": "GIBTP", "action": "Réexaminer la convention de délégation de gestion", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "07/05 : Document examiné conjointement avec le GIBTP. Accord sur les amendements à apporter. Version actualisée disponible la semaine du lundi 11 mai."}, {"projet": "GIBTP", "action": "Tenir une séance de travail pour finaliser la convention et l’arrêté de création du CFA", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Réunion tenue le 23/06, convention finalisée et validée ainsi que l’arrêté"}, {"projet": "GIBTP", "action": "Transmettre la version consensuelle de la convention et l’arrêté de création au Ministre", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Convention et arrêté transmis au Ministre. En attente instructions"}, {"projet": "GIBTP", "action": "Signer la convention", "statut": "En attente", "statut_raw": "En attente", "commentaire": ""}, {"projet": "GIBTP", "action": "Signer l’arrêté de création du CFA TP Mines", "statut": "En attente", "statut_raw": "En attente", "commentaire": ""}, {"projet": "GIBTP", "action": "Officialiser la mise à disposition de MM. OULABOUE Éric (Resp. pédagogique) et EBAKPOLE Antoine (Resp. relations extérieures), agents fonctionnaires retenus à l'issue des entretiens.", "statut": "En cours", "statut_raw": "En cours", "commentaire": "Le DHR est saisi aux fins de faciliter le processus de mise à disposition"}, {"projet": "GIBTP", "action": "Signer l'arrêté de création conférant le statut juridique au CFA TP & Mines, condition préalable aux partenariats institutionnels et démarches administratives.", "statut": "En cours", "statut_raw": "En cours", "commentaire": "Le préalable est la signature de la convention de délégation de gestion/ Le DAJ est saisi"}, {"projet": "GIBTP", "action": "Initier l'arrêté conjoint avec le Ministère du Budget (Art. 18-G CGI) pour : déduction BIC des dons, exonération des droits et taxes de douane, incitation fiscale aux entreprises donatrices (NEEMBA CI, TRACTO LENA…).", "statut": "En cours", "statut_raw": "En cours", "commentaire": "Le DAJ est saisi de la question"}, {"projet": "GIBTP", "action": "Valider et mettre à disposition les 11 profils identifiés (8 spécialités + 3 matières générales) pour les 4 filières CQP — préalable au démarrage des cours.", "statut": "En cours", "statut_raw": "En cours", "commentaire": "Le DAIP est saisi de la question"}, {"projet": "GIBTP", "action": "Apporter l'appui institutionnel à la campagne de communication, prospection et sélection pour atteindre la cible de 360 apprenants (1ʳᵉ promotion).", "statut": "En cours", "statut_raw": "En cours", "commentaire": "Le DAIP est saisi de la question"}, {"projet": "GIBTP", "action": "Faciliter la convention FDFP / CFA pour le financement « fléché » (taxe d'apprentissage, aides sectorielles BTP & Mines) couvrant frais pédagogiques et encadrement. Subvention d'équilibre sollicitée en phase de démarrage.", "statut": "En cours", "statut_raw": "En cours", "commentaire": "Le DAIP est saisi de la question"}, {"projet": "GIBTP", "action": "Identifier, valider et mettre à disposition les profils techniques fonction publique pour CAP Conduite d'engins, BT Topographie, BTS Géomatique. AMI complémentaire (18 formateurs) lancé le 25 avril 2026 (clôture 10 mai 2026).", "statut": "En cours", "statut_raw": "En cours", "commentaire": "Le DRH est saisi."}, {"projet": "GIBTP", "action": "Mobiliser et désigner 6 formateurs par filière pour le plan de formation de mai à septembre 2026. Financement déjà sécurisé (Fondation Caterpillar + FDFP).", "statut": "En cours", "statut_raw": "En cours", "commentaire": "Le DRH et DAI sont saisis"}, {"projet": "GIBTP", "action": "Visite du centre de Gagnoa et Lobbying FDFP (5 milliards)", "statut": "À faire", "statut_raw": "À faire", "commentaire": "Priorité budgétaire : Mobilisation de la Phase 2 auprès du FDFP."}, {"projet": "CORIS BANK", "action": "Examiner la lettre d’engagement reçue de Coris Bank", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Lettre transmise à l’IG et aux directeurs  pour observations."}, {"projet": "CORIS BANK", "action": "Organiser la signature de la lettre d’engagement", "statut": "En cours", "statut_raw": "En cours", "commentaire": "Lettre transmise au Ministre pour signature"}, {"projet": "Groupe DUVAL", "action": "Elaborer un cadre formel de collaboration entre le ministère et le groupe Duval pour les 5 prochaines années (formation technique, alternance et bourses).", "statut": "En attente", "statut_raw": "En attente", "commentaire": "Proposition d’une convention par le groupe pour avis"}, {"projet": "Groupe DUVAL", "action": "Sécuriser et formaliser des contrats d’alternance sur le projet de la Riviera", "statut": "En attente", "statut_raw": "En attente", "commentaire": ""}, {"projet": "Groupe DUVAL", "action": "Rejoindre le Pacte", "statut": "En cours", "statut_raw": "En cours", "commentaire": "Documentation du Pacte transmise pour avis"}, {"projet": "Groupe DUVAL", "action": "Transmettre au groupe Duval les documents relatifs au Pacte (le Pacte, sa charte, sa note conceptuelle, la lettre d’engagement et la note conceptuelle du label EFA)", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Documents en cours d’examen par le groupe"}, {"projet": "Groupe DUVAL", "action": "Organiser en juin une visite du Centre de Formation Technique de Bonoua (centre catholique) et examiner la possibilité d’étendre l’initiative aux autres métiers", "statut": "À faire", "statut_raw": "À faire (visite Bonoua)", "commentaire": ""}, {"projet": "APROMAC", "action": "Engager l’association sur le Pacte", "statut": "En cours", "statut_raw": "En cours", "commentaire": "Documentation du Pacte transmise au VP et en attente de retour"}, {"projet": "APROMAC", "action": "Présenter le Pacte en CA", "statut": "En cours", "statut_raw": "En cours", "commentaire": "12/06 : Le SG de l’Apromac nous tiendra informé du prochain CA pour présenter le Pacte"}, {"projet": "ACMC VATEL", "action": "Signer le Pacte PIETP", "statut": "En attente", "statut_raw": "En attente", "commentaire": "Observations sur la pacte attendue"}, {"projet": "ACMC VATEL", "action": "Vattel proposera des axes de collaboration à travers le Pacte", "statut": "En cours", "statut_raw": "En cours", "commentaire": "Discussions engagées, réception ce 12/05 d’un courrier officiel de signature du Pacte et de projets d’intérêt."}, {"projet": "ACMC VATEL", "action": "Accuser réception du courrier de collaboration reçu de ACMC Vatel", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Courrier transmis pour signature le 18/05"}, {"projet": "ACMC VATEL", "action": "Examiner les documents de Vattel", "statut": "Réalisé", "statut_raw": "Réaliser", "commentaire": "Note de synthèse transmise au Ministre pour instructions"}, {"projet": "ACMC VATEL", "action": "Examiner les propositions de VATEL (12 bourses, projet pilote 2000 jeunes, référentiels VAE)", "statut": "En cours", "statut_raw": "En cours", "commentaire": "Le DAIP est saisi"}, {"projet": "ACMC VATEL", "action": "Organiser la signature officielle du Pacte au Ministère", "statut": "En cours", "statut_raw": "En cours", "commentaire": "Accord du Ministre. En attente date"}, {"projet": "ACMC VATEL", "action": "Transmettre une lettre d’engagement à Vatel", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Projet de lettre d’engagement transmis 12/06 : VATEL a transmis sa proposition de lettre d’engagement. En cours d’examen par les directions."}, {"projet": "ACMC VATEL", "action": "Signer le pacte et la lettre d’engagement", "statut": "En cours", "statut_raw": "En cours", "commentaire": "Lettre d’engagement transmise au ministre pour signature En attente instructions du ministre quant à la date du 26 juin pour la signature du Pacte"}, {"projet": "Endeavour Mining", "action": "Rejoindre le pacte IETP : Signer le Pacte", "statut": "En cours", "statut_raw": "En cours", "commentaire": "En attente instructions du ministre quant à la date du 26 juin pour la signature du Pacte"}, {"projet": "Endeavour Mining", "action": "Elaborer lettre d’engagement ou MOU", "statut": "En attente", "statut_raw": "En attente", "commentaire": ""}, {"projet": "NESTLE", "action": "Négocier la signature du Pacte", "statut": "En cours", "statut_raw": "En cours", "commentaire": "Réunion technique tenue ce 13/05 : Nestlé intéressé par la formation duale, le partage d’expérience et les dons en matériel"}, {"projet": "NESTLE", "action": "Formaliser la participation au Pacte", "statut": "En cours", "statut_raw": "En cours", "commentaire": "En attente du courrier officiel de Nestlé à rejoindre le Pacte"}, {"projet": "French Tech", "action": "Élaboration de la convention (Pacte PIETP, Hackathon National)", "statut": "En cours", "statut_raw": "En cours", "commentaire": "Intégration immédiate requise à l'agenda de l'innovation. Préparation du Hackaton et de la célébration des 10 ans de la French tech"}, {"projet": "French Tech", "action": "Examiner les TDR du hackaton (20 juin)", "statut": "En cours", "statut_raw": "En cours", "commentaire": "En attente des TDR et du projet de convention MDET/French Tech"}, {"projet": "French Tech", "action": "Examiner la proposition de convention", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Convention en cours d’examen par le DAJ et l’IG"}, {"projet": "French Tech", "action": "Organiser la signature du Pacte et de la convention", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Pacte et de son MOU signé le 23 juin"}, {"projet": "SIFCA", "action": "Relance DIRCAB pour retour sur les documents du pacte", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Observations DIRCAB intégrées"}, {"projet": "SIFCA", "action": "Transmettre documents (Note conceptuelle, Charte du pacte et lettre d’engagement)", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "En attente retour observations"}, {"projet": "SIFCA", "action": "Programmation de la visite de sites et signature du pacte", "statut": "En attente", "statut_raw": "En attente (Partenaire)", "commentaire": "Attente calendrier définitif SIFCA."}, {"projet": "SIFCA", "action": "Signer le Pacte", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": ""}, {"projet": "NEEMBA", "action": "Rejoindre le Pacte", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "NEEMBA est signataire du Pacte depuis le 25/04"}, {"projet": "NEEMBA", "action": "Préparer la lettre d'engagement au pacte", "statut": "En cours", "statut_raw": "En cours", "commentaire": "Projet de lettre d’engagement transmis, en cours d’examen par le DRH du groupe. En attente de ses observations"}, {"projet": "Sea Invest", "action": "Transmettre un projet de lettre d’engagement dans le cadre du Pacte (PIEPT)", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Observations reçues et traitées"}, {"projet": "Sea Invest", "action": "Examiner le projet de lettre reçu", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Projet de lettre transmis au DG, IG et directeurs pour avis"}, {"projet": "Sea Invest", "action": "Signer la lettre d’engagement", "statut": "En cours", "statut_raw": "En cours", "commentaire": "Lettre transmise au ministre pour signature"}, {"projet": "Pacte Industrie (PIETP)", "action": "Finaliser le pacte et lettres d'engagement", "statut": "En cours", "statut_raw": "En cours (Arbitrage)", "commentaire": "Accord Ministre pour signature lors du SNET ; validation des observations entreprises."}, {"projet": "Pacte Industrie (PIETP)", "action": "Préparer la signature du Pacte par la première cohorte de 10 entreprises", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Objectif de 8 entreprises signataires atteint"}, {"projet": "Pacte Industrie (PIETP)", "action": "Signer le Pacte", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Signature du pacte avec 8 partenaires"}, {"projet": "Pacte Industrie (PIETP)", "action": "Transmettre projets de lettres d’engagement aux 8 signataires", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "8/8 projets transmis au 29/04. En attente des observations"}, {"projet": "Pacte Industrie (PIETP)", "action": "Augmenter le nombre de partenaires : discussions en cours avec Endeavour Mining, Nestlé, Orange CI, DUVAL, VATEL et Eranove Academy", "statut": "En cours", "statut_raw": "En cours", "commentaire": ""}, {"projet": "Pacte Industrie (PIETP)", "action": "Transmettre des courriers d’invitation à rejoindre le pacte à SACO, Cargill, Solibra, CIE, SODECI, AGL, Kaydan, Atlantic Precious mining, BERNABE", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Courriers transmis au Ministre pour signature"}, {"projet": "Pacte Industrie (PIETP)", "action": "Transmettre la Charte du Pacte", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "GPMCI non signataire"}]}, {"nom": "Axe 3", "titre": "Innovation & IA", "color": "#0EA5E9", "total": 12, "counts": {"Réalisé": 4, "En cours": 3, "En attente": 5, "À faire": 0}, "activation": 58.3, "items": [{"projet": "Huawei", "action": "Préparer une collaboration sur la Formation des formateurs, centre IA et mise à niveau technique des établissements", "statut": "En cours", "statut_raw": "En cours", "commentaire": "Signature du Pacte comme déclencheur"}, {"projet": "Huawei", "action": "Rejoindre le Pacte", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Docs du pacte transmis, accord Huawei"}, {"projet": "Huawei", "action": "Signer le Pacte", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Pacte signé"}, {"projet": "Huawei", "action": "Signer la lettre d’engagement", "statut": "En cours", "statut_raw": "En cours", "commentaire": "Huawei prépare un MOU"}, {"projet": "Huawei", "action": "Etudier fiche sur un projet de mission du Ministre en aout à Pékin", "statut": "En attente", "statut_raw": "En attente", "commentaire": "En attente de la fiche de Huawei"}, {"projet": "Huawei", "action": "Répondre à la lettre d’invitation officielle du gouvernement chinois", "statut": "En attente", "statut_raw": "En attente", "commentaire": "En attente du courrier"}, {"projet": "Huawei", "action": "Répondre à la lettre d’invitation de Huawei", "statut": "En attente", "statut_raw": "En attente", "commentaire": "En attente du courrier"}, {"projet": "Huawei", "action": "Examiner le programme proposé", "statut": "En attente", "statut_raw": "En attente", "commentaire": "En attente du programme"}, {"projet": "Huawei", "action": "Organiser la mission", "statut": "En attente", "statut_raw": "En attente", "commentaire": ""}, {"projet": "UNESCO", "action": "Développer la Synergie DTC / ETFP Digital 2027 : Elaborer Note de briefing GST", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Note transmise au Ministre, Exploitation des outils démo demandée pour alignement stratégique."}, {"projet": "Cartographie", "action": "Traiter le Recensement exhaustif des écoles publiques et privées", "statut": "En cours", "statut_raw": "En cours", "commentaire": "Cadrage stratégique : Intégration requise à la Feuille de Route 2026."}, {"projet": "Économie Numérique", "action": "Elaborer une Note sur l'apport du Ministère partenaire au secteur ET", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Recherche de convergence interministérielle."}]}, {"nom": "Axe 4", "titre": "Gouvernance & instructions PM", "color": "#D49A0C", "total": 9, "counts": {"Réalisé": 4, "En cours": 2, "En attente": 0, "À faire": 3}, "activation": 66.7, "items": [{"projet": "Filière Ascenseurs", "action": "Créér la filière techniciens (ascenseurs et pièces détachées)", "statut": "À faire", "statut_raw": "À faire", "commentaire": "Instruction directe du Premier Ministre."}, {"projet": "Maintenance (LT)", "action": "Développer un Plan de gestion rigoureuse et maintenance des équipements", "statut": "À faire", "statut_raw": "À faire", "commentaire": "Instruction PM : Pérennisation des actifs de l'État."}, {"projet": "Politique 26-35", "action": "Installer le Comité de Pilotage et le Comité Technique", "statut": "À faire", "statut_raw": "À faire", "commentaire": "Structuration du pilotage de la Politique Nationale."}, {"projet": "Charte des établissements ET", "action": "Elaborer un projet de charte", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Projet transmis au Ministre et à l’IG"}, {"projet": "Charte des établissements ET", "action": "Intégrer les observations de l’IG", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Observations reçues et traitées"}, {"projet": "Charte des établissements ET", "action": "Vulgariser la Charte", "statut": "En cours", "statut_raw": "En cours", "commentaire": "Charte finale transmise au Ministre pour validation avant diffusion"}, {"projet": "Charte des établissements ET", "action": "Transmettre la charte au DAJ pour avis", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "En attente des observations du DAJ"}, {"projet": "Charte des établissements ET", "action": "Transmettre la Charte au Ministre pour validation puis vulgarisation", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Charte transmise. En attente instructions du Ministre"}, {"projet": "Baromètre Employabilité", "action": "Audit des données d'insertion et actualisation des TDR", "statut": "En cours", "statut_raw": "En cours", "commentaire": "Note validée par DIRCAB ; Doc actualisé par M. TUO et transmis au Ministre Fiche projet en cours de finalisation par M. TUO."}]}, {"nom": "Axe 5", "titre": "Coopération internationale", "color": "#1E7E34", "total": 21, "counts": {"Réalisé": 7, "En cours": 9, "En attente": 4, "À faire": 1}, "activation": 76.2, "items": [{"projet": "Chine (CCECC-CI)", "action": "Veiller à l’Inscription du centre de mutualisation en projet prioritaire", "statut": "En cours", "statut_raw": "En cours (arbitrage PM)", "commentaire": "Note adressée au PM"}, {"projet": "Chine (CCECC-CI)", "action": "Veiller au Dossier foncier (5 ha) à Songon", "statut": "En cours", "statut_raw": "En cours (arbitrage PM)", "commentaire": "Note adressée au PM"}, {"projet": "Chine (CCECC-CI)", "action": "Participer à la Conférence Internationale sur les ET en Chine en juin 2026", "statut": "En attente", "statut_raw": "En attente", "commentaire": "Invitation officielle attendue"}, {"projet": "Chine (CCECC-CI)", "action": "Signer le Pacte", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": ""}, {"projet": "Hunan / PCPLUS", "action": "Réaliser 2 notes conceptuelles pour Projets prioritaires (Hôtellerie et Électricité)", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "2 notes conceptuelles transmises aux partenaires après audience du 14/04."}, {"projet": "Convention d'Abidjan Certification", "action": "Développer la Reconnaissance régionale des qualifications (Afrique de l'Ouest) en relation avec l’UNESCO", "statut": "En cours", "statut_raw": "En cours", "commentaire": "Enjeu diplomatique : Séance de travail requise avec le Directeur de la Pédagogie et l’UNESCO. En attente accord du Ministre"}, {"projet": "Convention d'Abidjan Certification", "action": "Rédiger la note conceptuelle", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "06/05 : Note conceptuelle transmise au Ministre"}, {"projet": "Convention d'Abidjan Certification", "action": "Transmettre la note conceptuelle à l’UNESCO", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Courrier et note conceptuelle transmis"}, {"projet": "Convention d'Abidjan Certification", "action": "Développer la convention, mettre en place un groupe de travail.", "statut": "En cours", "statut_raw": "En cours", "commentaire": "L’UNESCO a désigné un point focal pour avancer sur le sujet"}, {"projet": "Maroc (OFPPT)", "action": "Elaborer note de cadrage de la mission", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Note de cadrage transmise ; logistique mission réalisée"}, {"projet": "Canada (PAGADE)", "action": "Traiter le dossier PAGADE", "statut": "En cours", "statut_raw": "En cours", "commentaire": "Dossier pris en main par le DIRCAB"}, {"projet": "Canada (PAGADE)", "action": "Transmettre une note sur les 9 projets proposés dans le cadre de la coopération", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "La mission a identifié 1 projet d’intérêt (Genre)"}, {"projet": "Japon", "action": "Adopter la méthode Kosen avec le JICA", "statut": "En cours", "statut_raw": "En cours", "commentaire": ""}, {"projet": "Japon", "action": "Organiser une rencontre entre le Ministre et les entreprises japonaises en CI", "statut": "En cours", "statut_raw": "En cours", "commentaire": "L’ambassade organise cette rencontre et nous tiens informé"}, {"projet": "Japon", "action": "Créer un établissement de type Kosen, établissement de référence", "statut": "En cours", "statut_raw": "En cours", "commentaire": "TDR de l’établissement type kosen réalisé et transmis au FDFP"}, {"projet": "Japon", "action": "Intégrer une formation en économie bleue dans les filières techniques", "statut": "À faire", "statut_raw": "A faire", "commentaire": ""}, {"projet": "Japon", "action": "Recueillir observations de l’Ambassade sur les  TDR établissement excellence type Kosen", "statut": "En cours", "statut_raw": "En cours", "commentaire": "En attente des observations de l’Ambassade"}, {"projet": "Luxembourg", "action": "Développer un Accord-cadre et rencontre Chambre Belgo-Luxembourgeoise", "statut": "En attente", "statut_raw": "En attente", "commentaire": "Propositions de pistes transmises au Duché ; attente retour du Consul Honoraire."}, {"projet": "Chine", "action": "Assister à l’audience de l’Ambassadeur de Chine en CI", "statut": "En attente", "statut_raw": "En attente", "commentaire": "Prise de RDV en cours"}, {"projet": "Chine", "action": "Rédiger une note de cadrage anticipée pour l’audience", "statut": "Réalisé", "statut_raw": "Réalisé", "commentaire": "Note transmise au Ministre"}, {"projet": "Chine", "action": "Préparer la participation du Ministre au World Skills 2026 en partenariat avec les autorités chinoises", "statut": "En attente", "statut_raw": "En attente", "commentaire": "Point qui sera abordé lors de l’audience"}]}], "global": {"total": 151, "counts": {"Réalisé": 63, "En cours": 57, "En attente": 22, "À faire": 9}, "activation": 79.5}};
+const SC = {'Réalisé':'#1E7E34','En cours':'#1F6FB2','En attente':'#D49A0C','À faire':'#B02418'};
+const ORDER = ['Réalisé','En cours','En attente','À faire'];
+const fmt = n => String(n).replace('.',',');
+
+// flatten items with axe ref
+const ALL = [];
+DATA.axes.forEach(a=>a.items.forEach(it=>ALL.push({...it, axe:a.nom})));
+
+// ---- header values
+document.getElementById('act-val').textContent = fmt(DATA.global.activation);
+document.getElementById('tot-val').textContent = DATA.global.total;
+document.getElementById('donut-n').textContent = DATA.global.total;
+document.getElementById('hdr-date').textContent = DATA.date;
+document.getElementById('ft-date').textContent = DATA.date;
+
+// ---- donut
+(function(){
+  const g = DATA.global.counts, tot = DATA.global.total;
+  const svg = document.getElementById('donut');
+  const R=15.9155, C=2*Math.PI*R; let off=0; let html='';
+  html += `<circle cx="21" cy="21" r="${R}" fill="none" stroke="#EFE9DD" stroke-width="6"/>`;
+  ORDER.forEach(s=>{
+    const v=g[s]||0; if(!v) return;
+    const len=v/tot*C;
+    html += `<circle cx="21" cy="21" r="${R}" fill="none" stroke="${SC[s]}" stroke-width="6"
+      stroke-dasharray="${len.toFixed(3)} ${(C-len).toFixed(3)}"
+      stroke-dashoffset="${(-off).toFixed(3)}" transform="rotate(-90 21 21)"
+      stroke-linecap="butt"/>`;
+    off+=len;
+  });
+  svg.innerHTML=html;
+})();
+
+// ---- legend
+(function(){
+  const g=DATA.global.counts, tot=DATA.global.total, el=document.getElementById('legend');
+  el.innerHTML = ORDER.map(s=>{
+    const v=g[s]||0, pc=(v/tot*100).toFixed(1).replace('.',',');
+    return `<div class="leg" data-status="${s}">
+      <span class="sw" style="background:${SC[s]}"></span>
+      <span class="nm">${s}</span>
+      <span class="ct">${v}</span>
+      <span class="pc">${pc}%</span></div>`;
+  }).join('');
+  el.querySelectorAll('.leg').forEach(l=>l.addEventListener('click',()=>setStatus(l.dataset.status)));
+})();
+
+// ---- axes
+(function(){
+  const el=document.getElementById('axes');
+  el.innerHTML = DATA.axes.map((a,i)=>{
+    const segs = ORDER.map(s=>{
+      const v=a.counts[s]||0; if(!v) return '';
+      return `<i style="width:${v/a.total*100}%;background:${SC[s]}"></i>`;
+    }).join('');
+    const pills = ORDER.map(s=>{
+      const v=a.counts[s]||0; if(!v) return '';
+      return `<span class="pill" style="background:${SC[s]}14;color:${SC[s]}">
+        <span class="d" style="background:${SC[s]}"></span>${s} · ${v}</span>`;
+    }).join('');
+    return `<div class="axe" data-axe="${a.nom}">
+      <div class="axe-head">
+        <div class="axe-id">${i+1}</div>
+        <div class="axe-meta">
+          <div class="axe-title">${a.titre}</div>
+          <div class="axe-sub">${a.total} diligences</div>
+        </div>
+        <div class="axe-act"><div class="v">${fmt(a.activation)}%</div><div class="k">activées</div></div>
+        <div class="chev">▶</div>
+      </div>
+      <div class="bar">${segs}</div>
+      <div class="axe-body"><div class="mini-stat">${pills}</div></div>
+    </div>`;
+  }).join('');
+  el.querySelectorAll('.axe').forEach(ax=>{
+    ax.querySelector('.axe-head').addEventListener('click',e=>{
+      if(e.detail===2){ setAxe(ax.dataset.axe); return; }
+      ax.classList.toggle('open');
+    });
+  });
+})();
+
+// ---- filters + list
+let fStatus='Tous', fAxe='Tous', fText='';
+const chipsEl=document.getElementById('chips'), listEl=document.getElementById('list');
+
+function buildChips(){
+  const g=DATA.global.counts;
+  let chips=[`<div class="chip ${fStatus==='Tous'?'on':''}" data-s="Tous"
+      style="${fStatus==='Tous'?'background:#15110C':''}">Tous <span class="cnt">${DATA.global.total}</span></div>`];
+  ORDER.forEach(s=>{
+    const on=fStatus===s;
+    chips.push(`<div class="chip ${on?'on':''}" data-s="${s}"
+      style="${on?`background:${SC[s]}`:''}">
+      <span class="d" style="background:${on?'#fff':SC[s]}"></span>${s}
+      <span class="cnt">${g[s]}</span></div>`);
+  });
+  chipsEl.innerHTML=chips.join('');
+  chipsEl.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>setStatus(c.dataset.s)));
+}
+function setStatus(s){ fStatus = (fStatus===s?'Tous':s); buildChips(); render(); }
+function setAxe(a){ fAxe = (fAxe===a?'Tous':a); fStatus='Tous'; buildChips();
+  document.getElementById('search').scrollIntoView({behavior:'smooth',block:'start'}); render(); }
+
+function render(){
+  let rows = ALL.filter(it=>{
+    if(fStatus!=='Tous' && it.statut!==fStatus) return false;
+    if(fAxe!=='Tous' && it.axe!==fAxe) return false;
+    if(fText){
+      const hay=(it.projet+' '+it.action+' '+it.commentaire).toLowerCase();
+      if(!hay.includes(fText)) return false;
+    }
+    return true;
+  });
+  const axeNum={'Axe 1':1,'Axe 2':2,'Axe 3':3,'Axe 4':4,'Axe 5':5};
+  let head=`<div class="count-line">${rows.length} diligence${rows.length>1?'s':''}`+
+    (fAxe!=='Tous'?` · ${fAxe}`:'')+(fStatus!=='Tous'?` · ${fStatus}`:'')+
+    (fText?` · « ${fText} »`:'')+`</div>`;
+  if(!rows.length){ listEl.innerHTML=head+`<div class="empty">Aucune diligence ne correspond à ce filtre.</div>`; return; }
+  listEl.innerHTML = head + rows.map(it=>{
+    const c=SC[it.statut]||'#999';
+    return `<div class="item" style="border-left-color:${c}">
+      <div class="item-top">
+        <div class="item-proj">${esc(it.projet)}</div>
+        <div class="item-axe">Axe ${axeNum[it.axe]}</div>
+      </div>
+      <div class="item-act">${esc(it.action)}</div>
+      ${it.commentaire?`<div class="item-com">${esc(it.commentaire)}</div>`:''}
+      <div class="item-status" style="color:${c}"><span class="d" style="background:${c}"></span>${it.statut}</div>
+    </div>`;
+  }).join('');
+}
+function esc(s){return (s||'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));}
+
+document.getElementById('search').addEventListener('input',e=>{ fText=e.target.value.trim().toLowerCase(); render(); });
+
+buildChips(); render();
+</script>
+</body>
+</html>
